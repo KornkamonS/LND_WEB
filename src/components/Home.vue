@@ -286,7 +286,8 @@
                 }, 
                 clickSubmit() { 
                     var vm = this;
-                    var file = this.file_image;     
+                    var file = this.file_image; 
+                    var image_name=file.name    
                     var storageRef = firebase.storage().ref();
                     var LungImagesRef = storageRef.child('images_Lung/'+file.name);
                     var uploadTask = LungImagesRef.put(file);
@@ -330,19 +331,74 @@
                         // console.log(downloadURL)
                         // var httpsReference = firebase.storage().refFromURL(downloadURL);
                         vm.imageUpload=downloadURL;
+                        
                         // console.log(vm.imageUpload)
-                        vm.afterSubmit();
+                        console.log(image_name)
+                        vm.afterSubmit(downloadURL,image_name);
                     });
                                        
                 },
-                afterSubmit(){
+                afterSubmit(image_url,image_name){
                     // console.log('test')
-                    $('#uploadModal').modal('hide');
-                    this.uploadData();
-                    this.resetUploadData();
+                    var vm = this;
+                    var image_process= {
+                        imageURL: image_url,
+                        imageName: image_name 
+                    }
+                    console.log(image_process)
+                    this.$http.post('http://127.0.0.1:5000/download',image_process)
+                    .then(response=>{
+                        console.log(response)
+                        console.log(response.body.success)
+                        if(response.body.success) 
+                        {
+                            var name=response.body.imageName
+                            console.log(name)
+                            // Create a reference to the file we want to download
+                            var storageRef = firebase.storage().ref();
+                            var starsRef = storageRef.child('test/'+name);
+
+                            // Get the download URL
+                            starsRef.getDownloadURL().then(function(url) {
+                                vm.imageUpload=url
+                                $('#uploadModal').modal('hide');
+                                vm.uploadData();
+                                vm.resetUploadData();
+                            }).catch(function(error) {
+                            // A full list of error codes is available at
+                            // https://firebase.google.com/docs/storage/web/handle-errors
+                            switch (error.code) {
+                                case 'storage/object_not_found':
+                                    console.log(" File doesn't exist")
+                                    break;
+
+                                case 'storage/unauthorized':
+                                    console.log("User doesn't have permission to access the object")
+                                    break;
+
+                                case 'storage/canceled':
+                                    console.log("User canceled the upload")
+                                    break;
+
+                                case 'storage/unknown':
+                                    console.log("Unknown error occurred, inspect the server response")
+                                    break;
+                            }
+                            });
+                            console.log("sucsess!!");
+                            this.fetchData();
+                            // this.persons.push(person)
+                        }else{
+                            alert('Error! please upload data again')
+                        }
+                    }),error=>{
+                        alert('error!')
+                    }
+                    // $('#uploadModal').modal('hide');
+                    // this.uploadData();
+                    // this.resetUploadData();
                 },   
-                uploadData()
-                {
+                uploadData(){
                     var person=this.newData()
                 //    console.log(person);
                    this.$http.post('https://lndapi.herokuapp.com/addtable', person,{
@@ -404,7 +460,7 @@
                     var input = event.target;                    
                     if (input.files && input.files[0]) {
                        this.file_image=input.files[0];
-                    //    console.log( this.file_image);
+                       console.log( this.file_image.name);
                         var reader = new FileReader();
                         
                         reader.onload = (e) => {                          
