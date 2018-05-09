@@ -6,15 +6,16 @@
             <a href="home.html" class="w3-bar-item w3-button w3-mobile"> About us</a>
             <a href="#" class="w3-bar-item w3-button w3-blue w3-right w3-mobile"><span class="glyphicon glyphicon-log-in"></span> Log in</a>
         </div> -->
-       <div class="w3-row">
-            <div class="w3-col l7">
+       <div class="w3-row " style="background-color:#36486b;min-height:900px" >
+            <!-- <div class="w3-col l1">.</div> -->
+            <div class="w3-col l7 w3-padding-xlarge" style="padding=20px">
                 <!--background: url(image/index3.jpg) no-repeat;background-size: 40% auto; <center>-->
-            <img src="../assets/image/index2.jpg" style="width:80%;height:auto;margin:auto 0 "> 
+                <img src="../assets/image/index_bg.png" style="width:80%;height:auto;margin:auto 0 "> 
             </div>
             <div class="w3-col l5">
                 <div style="padding:10vh">
                     <!-- Login from -->
-                    <form class="w3-container w3-card-4 " style="background-color:#A73C3C" @submit.prevent="validateBeforeSubmit">
+                    <form class="w3-container w3-card-4" style="background-color:#4051B3"  @submit.prevent="validateBeforeSubmit">
                         <h2 class="w3-text-white">Sign in</h2>
                         <p>
                             <label class="w3-text-white"><b>E-mail</b></label>
@@ -24,13 +25,13 @@
                         </p>
                         <p>
                             <label class="w3-text-white"><b>Password</b></label>
-                            <input class="w3-input w3-border" v-model.lazy="user.password" name="password" type="password" id="password"
+                            <input class="w3-input w3-border w3-text-black" v-model.lazy="user.password" name="password" type="password" id="password"
                             v-validate="'required'" :class="{'input': true, 'is-danger': errors.has('user.password1') }">
                             <label v-show="errors.has('password')" style="color: white;font-size:small;">{{ errors.first('password') }}</label>
                         </p>
                         <p>
                             <button class="w3-btn w3-white w3-right w3-margin" >Ok</button>
-                            <router-link to="/register"  class="w3-btn  w3-right w3-margin w3-text-black"  style="background-color:#FFB3B3">Register</router-link>
+                            <router-link to="/register"  class="w3-btn  w3-right w3-margin w3-text-black"  style="background-color:#b7d7e8">Register</router-link>
                             <!-- <a class="w3-btn  w3-right w3-margin w3-text-black" style="background-color:#FFB3B3" href="register.html">Register </a> -->
                         </p>
                     </form>

@@ -17,16 +17,16 @@
         <!-- Table -->
         <div class="container w3-responsive" style="margin-Top:10px;width:90%;min-height:500px;max-height:800px">
             <h1 style="text-align:center;padding:10px">History</h1>
-            <table class="table table-bordered w3-centered w3-striped " id='data_table'>
+            <table class="table table-bordered w3-centered w3-card" id='data_table'>
                 <thead>
                     <tr class="w3-indigo">
                         <th class="col-sm-1">Image</th>
                         <th class="col-sm-4">Patient's name</th>
                         <th class="col-sm-1">Gender</th>
                         <th class="col-sm-1">Age</th>
-                        <th class="col-sm-1">Date</th>
+                        <th class="col-sm-2">Upload's Date</th>
                         <th class="col-sm-1">Prediction</th>
-                        <th class="col-sm-2">Medical diagnosis</th>
+                        <th class="col-sm-1">Medical diagnosis</th>
                         <th class="col-sm-1">Edit</th>
                     </tr>
                 </thead>
@@ -46,23 +46,35 @@
                         <td>{{person.gender}}</td>
                         <td>{{person.age}}</td>
                         <td>{{person.date}}</td>
-                        <td>{{person.prediction}}
-                            <!-- <button class="w3-button w3-red w3-round tablebutton" v-show:="re_process_toggle(person)" v-on:click="re_process(person)">re-process</button> -->
+                        <td>
+                            <!-- {{person.prediction}} -->
+                             <span v-if="person.prediction=='Yes'">
+                                         <p data-toggle="tooltip-Yes-pre" title="Has nodule">{{person.prediction}}</p>
+                                     </span>                                     
+                                    <span v-else> 
+                                        <p data-toggle="tooltip-No-pre" title="Don't Has Nodule" >{{person.prediction}}</p></span>                                     
+                                    
                         </td>
                         <td>
                             <center>
-                                <span v-if="person.stat">{{person.fact}}                                      
-                                </span>                                
-                                <span v-else> <button class="w3-button w3-pink w3-round tablebutton" v-on:click="updateFact(index,1)" >Yes</button>
-                                <button class="w3-button w3-blue w3-round tablebutton" v-on:click="updateFact(index,0)"  >No</button></span>
+                                <span v-if="person.stat">
+                                    <!-- {{person.fact}}-->
+                                    <span v-if="person.fact=='Yes'">
+                                         <p data-toggle="tooltip-Yes-med" title="Has nodule">{{person.fact}}</p>
+                                     </span>                                     
+                                    <span v-else> 
+                                        <p data-toggle="tooltip-No-med" title="Don't Has Nodule" >{{person.fact}}</p></span>                                     
+                                    </span>                                
+                                <span v-else> <button class="w3-button w3-pink w3-round tablebutton" v-on:click="updateFact(index,1)" data-toggle="tooltip-Yes" title="Has nodule"><i class="glyphicon glyphicon-ok"></i></button>
+                                <button class="w3-button w3-blue w3-round tablebutton" v-on:click="updateFact(index,0)" data-toggle="tooltip-No" title="Don't Has Nodule" ><i class="glyphicon glyphicon-remove"></i></button></span>
 
                             </center>
                         </td>
                         <td> <center>
                              <!-- <button class="w3-button w3-green w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Edit</button>
                              <button class="w3-button w3-red w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Delete</button> -->
-                             <button class="w3-button w3-green w3-round tablebutton" v-on:click="edit_modal(index)"><i class="glyphicon glyphicon-pencil"></i></button>
-                             <button class="w3-button w3-pink w3-round tablebutton" v-on:click="delete_modal(index)"><i class="glyphicon glyphicon-trash"></i></button>
+                             <button class="w3-button w3-green w3-round tablebutton" v-on:click="edit_modal(index)" data-toggle="tooltip-Edit" title="Edit"><i class="glyphicon glyphicon-pencil"></i></button>
+                             <button class="w3-button w3-pink w3-round tablebutton" v-on:click="delete_modal(index)" data-toggle="tooltip-Delete" title="Delete" ><i class="glyphicon glyphicon-trash"></i></button>
                              
                             <!-- <button class="tablebutton w3-button w3-green w3-round" v-on:click="updateFact(index,0)"  style="height:20px;font-size:10;padding-Top:3">Edit</button> -->
                             </center>
@@ -84,10 +96,10 @@
                         
                         <span v-if="modal_data.modal_stat">
                             <span v-show="modal_data.modal_stat"  v-if="modal_data.modal_result=='No'" class="tag w3-green w3-padding" style="font-size:medium;font-weight: 700;">don't have a nodule in lung</span>
-                            <span v-show="modal_data.modal_stat"  v-if="modal_data.modal_result=='Yes'" class="tag w3-red w3-padding" style="font-size:medium;font-weight: 700;">Have a nodule in lung</span>                                     
+                            <span v-show="modal_data.modal_stat"  v-if="modal_data.modal_result=='Yes'" class="tag w3-pink w3-padding" style="font-size:medium;font-weight: 700;">Have a nodule in lung</span>                                     
                         </span>                                
                         <span v-else> 
-                            <button class="w3-button w3-red w3-round tablebutton" v-on:click="updateFact(modal_data.modal_index,1)" >Yes</button>
+                            <button class="w3-button w3-pink w3-round tablebutton" v-on:click="updateFact(modal_data.modal_index,1)" >Yes</button>
                             <button class="w3-button w3-blue w3-round tablebutton" v-on:click="updateFact(modal_data.modal_index,0)"  >No</button>
                         </span>
                                 
@@ -303,8 +315,8 @@
                 <!-- <div class="modal-footer" style="height:10px"> -->
 
                 </div>
-            </div>
         </div>
+        
         <!--END uploadModal-->
     </div>
 </template>
@@ -776,6 +788,7 @@
                 this.process_image(item,item.id_data)
             },
             get_result_imageURL(person){
+                var vm = this
                 if(person.prediction=='Yes'||person.prediction=='No')
                 {
                     console.log('get_result')
@@ -783,8 +796,8 @@
                     var starsRef = storageRef.child('Test/result_'+person.imageName);
                     return starsRef.getDownloadURL().then(result=>{
                         console.log(result)
-                        this.modal_data.modal_imgPURL=result  
-                        this.edit_data.u_imageURLresult=result
+                        vm.modal_data.modal_imgPURL=result  
+                        vm.edit_data.u_imageURLresult=result
                         // return result
                     })
                     .catch(function(error) {
@@ -805,21 +818,22 @@
                                 console.log("Unknown error occurred, inspect the server response")
                                 break;
                             }
-                        this.modal_data.modal_imgPURL= 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
-                        this.edit_data.u_imageURLresult== 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
+                        vm.modal_data.modal_imgPURL= 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
+                        vm.edit_data.u_imageURLresult== 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
                 });
                 }else this.modal_data.modal_imgPURL= 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
                 this.edit_data.u_imageURLresult== 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
             },
             get_raw_imageURL(person){ 
+                var vm = this
                 console.log('get_raw')
                 var storageRef = firebase.storage().ref();
                 var starsRef = storageRef.child('images_Lung/'+person.imageName);
            
                 starsRef.getDownloadURL().then(result=>{
                     // console.log(result)
-                    this.modal_data.modal_imgURL=result                                          
-                    this.edit_data.u_imageURL = result 
+                    vm.modal_data.modal_imgURL=result                                          
+                    vm.edit_data.u_imageURL = result 
                     // return result
                 })
                 .catch(function(error) {

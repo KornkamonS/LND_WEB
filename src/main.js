@@ -7,7 +7,7 @@ import firebase from 'firebase'
 import { firebaseApp, db } from '@/firebaseConfig'
 import VueResource from 'vue-resource'
 // import VueSession from 'vue-session'
-
+ 
 // Vue.use(VueSession);
 Vue.use(VueResource);
 
