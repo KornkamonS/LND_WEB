@@ -157,7 +157,7 @@
                                     <p v-show="errors.has('imageUpload')" style="color: red;font-size:small;">Patient's age is required and valid</p> -->
                                     <a class="w3-btn w3-blue-gray w3-padding w3-margin w3-section" @click="onPickFile">Select image</a>
 
-                                <input @change="previewFile" type="file" id="files" name="files[]" value="Upload image" ref="fileInput" accept="image/*" style="padding:20px; display: none"
+                                <input @change="previewFile" type="file" id="files" name="files[]" value="Upload image" ref="fileInput" accept="image/*" style="padding:20px; display:none"
                                 v-validate="'required'"
                                 :class="{'input': true, 'is-danger': errors.has('imageUpload') }">
                                 <p v-show="!errors.has('imageUpload')" style="color: white;font-size:small;">.</p>
@@ -364,7 +364,7 @@
                     u_age: '',
                     u_date: '',
                     u_gender: '',
-                    u_image: '',
+                    // u_image: '',
                     u_imageName:'',
                     u_subbimtBut:false},
                 edit_data:
@@ -377,13 +377,15 @@
                     u_fact:'',
                     u_stat:'',
                     u_key:''  },
+                    
                 delete_data:{
                     d_key:'',
                     d_id:'',
                     d_name:'',
                     d_date:'',
-                    d_image:'',
-                    d_imageResult:'',
+                    d_imageName:'',
+                    // d_image:'',
+                    // d_imageResult:'',
                     d_prediction:''
                 },
                 persons:[],                
@@ -468,8 +470,8 @@
                     age : data.age,
                     date : data.date,
                     gender : data.gender,
-                    imageURL : data.imageURL, 
-                    imageURLresult:data.imageURLresult,
+                    // imageURL : data.imageURL, 
+                    // imageURLresult:data.imageURLresult,
                     prediction: data.prediction,
                     fact:data.fact,
                     stat:data.stat,
@@ -479,13 +481,16 @@
                 return person; 
             },
             imageClicked(item,index) {
-                this.modal_data.modal_imgURL = item.imageURL;
+                
                 this.modal_data.modal_name = item.name;
                 this.modal_data.modal_result = item.fact;
-                this.modal_data.modal_stat = item.stat;
-                this.modal_data.modal_imgPURL=item.imageURLresult;
+                this.modal_data.modal_stat = item.stat;                
                 this.modal_data.modal_show_stat=item.show_result;
                 this.modal_data.modal_index=index;
+                console.log(item)
+                this.get_result_imageURL(item);
+                this.get_raw_imageURL(item);
+                console.log(this.modal_data)
                 $("#imageModal").modal('show');
             },
             clickSubmit() { 
@@ -503,12 +508,11 @@
                 var person=this.newData()
                 var LungImagesRef = storageRef.child('images_Lung/'+image_name);
                 
-                this.upload_data.uploadTask = LungImagesRef.put(file);
+                this.upload_data.uploadTask = LungImagesRef.put(file)
                 var input = event.target;                        
                 var reader = new FileReader();
                 reader.onload = (event) => {
-                    this.imageUpload = e.target.result;
-                        // console.log(this.imageUpload)
+                    this.imageUpload = e.target.result; 
                 }
                
                 this.upload_data.uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, 
@@ -528,12 +532,12 @@
                     }
                 }, 
                 function(error) {
-                    this.upload_data.u_subbimtBut=false;
-                    alert('upload error pls. upload again')                    
+                    vm.upload_data.u_subbimtBut=false;
+                    // alert('upload error pls. upload again')                    
                 }, 
                 function() { 
-                    var downloadURL = vm.upload_data.uploadTask.snapshot.downloadURL; 
-                    person.imageURL=downloadURL;
+                    // var downloadURL = vm.upload_data.uploadTask.snapshot.downloadURL; 
+                    // person.imageURL=downloadURL;
                     vm.upload_data.u_subbimtBut=false;  
                     vm.addData2Table(person).then(result=>{
                         $('#uploadModal').modal('hide');
@@ -548,8 +552,8 @@
                     var vm = this;
 
                     var image_process= {
-                        imageURL: person.imageURL,
-                        imageName: person.imageName,
+                        // imageURL: person.imageURL,
+                        // imageName: person.imageName,
                         personKey: key,
                         userKey:this.user_current.userId
                     }
@@ -559,47 +563,19 @@
                         console.log(response.ok)
                         if(response.ok) 
                         {
-                            var name=response.body.imageName
-                            var prediction = response.body.prediction
-                            console.log(prediction)
-                            var storageRef = firebase.storage().ref();
-                            console.log(storageRef)
-                            console.log('Test/'+name)
-                            var starsRef = storageRef.child('Test/'+name);
-                            console.log(starsRef)
+                            vm.fetchData()
+                            // var name=response.body.imageName
+                            // var prediction = response.body.prediction
+                            // console.log(prediction)
+                            // var storageRef = firebase.storage().ref();
+                            // console.log(storageRef)
+                            // console.log('Test/'+name)
+                            
+                            // console.log(starsRef)
                             // var a= starsRef.getDownloadURL()
                             // console.log(a)
-                            starsRef.getDownloadURL().then(result=>{
-                                console.log(result)
-                                console.log("sucsess!!");
-                                console.log(person,prediction,result)
-                                person.imageURLresult=result
-                                person.prediction=prediction
-                                vm.editDataTable(person,key).then(
-                                    vm.fetchData()
-                                );
-                            })
-                            .catch(function(error) {
-                            // A full list of error codes is available at
-                            // https://firebase.google.com/docs/storage/web/handle-errors
-                            switch (error.code) {
-                                case 'storage/object_not_found':
-                                    console.log(" File doesn't exist")
-                                    break;
 
-                                case 'storage/unauthorized':
-                                    console.log("User doesn't have permission to access the object")
-                                    break;
-
-                                case 'storage/canceled':
-                                    console.log("User canceled the upload")
-                                    break;
-
-                                case 'storage/unknown':
-                                    console.log("Unknown error occurred, inspect the server response")
-                                    break;
-                            }
-                            });
+                           
                         }else{
                             alert('Error! please upload data again')
                         }
@@ -612,7 +588,7 @@
                     return firebase.database().ref('users/' + this.user_current.userId +'/table/').push(person)
                 },
             newData(){ 
-                    this.upload_data.u_image=this.imageUpload;                                       
+                    // this.upload_data.u_image=this.imageUpload;                                       
                     this.upload_data.u_date=datenow.getDate()+'/'+datenow.getMonth()+'/'+datenow.getFullYear()+' '+datenow.getHours()+':'+datenow.getMinutes()+':'+datenow.getSeconds();
                     var data = {
                         // data_id:md5(this.upload_data.u_name+this.upload_data.u_date) ,       
@@ -621,8 +597,8 @@
                         age : this.upload_data.u_age,
                         date : this.upload_data.u_date,
                         gender : this.upload_data.u_gender,
-                        imageURL : this.upload_data.u_image, 
-                        imageURLresult:'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d',
+                        // imageURL : this.upload_data.u_image, 
+                        // imageURLresult:'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d',
                         prediction: 'Calculating',
                         fact:'',
                         stat: 0,
@@ -636,13 +612,14 @@
                     this.upload_data.u_age= '';
                     this.upload_data.u_date= '';
                     this.upload_data.u_gender= '';
-                    this.upload_data.u_image= '';
-                    this.upload_data.imageUpload='';
+                    // this.upload_data.u_image= '';
+                    this.imageUpload='';
                     this.modal_data.modal_stat=0;
                     this.progress_value=0; 
                     this.file_image={name:'กรุณาเลือกรูปภาพ'};  
                     this.upload_data.u_subbimtBut=false;
-                    this.errors.clear();
+                    // this.errors.clear();
+                    $("#files").val('');
                 },
             updateFact(item, value) {
                     let person = {                     
@@ -651,8 +628,8 @@
                         age : this.persons[item].age,
                         date : this.persons[item].date,
                         gender : this.persons[item].gender,
-                        imageURL : this.persons[item].imageURL, 
-                        imageURLresult:this.persons[item].imageURLresult,
+                        // imageURL : this.persons[item].imageURL, 
+                        // imageURLresult:this.persons[item].imageURLresult,
                         prediction: this.persons[item].prediction,
                         fact:this.persons[item].fact,
                         stat:this.persons[item].stat   
@@ -680,8 +657,8 @@
                     this.edit_data.u_age = this.persons[item].age
                     this.edit_data.u_date =this.persons[item].date
                     this.edit_data.u_gender = this.persons[item].gender
-                    this.edit_data.u_imageURL = this.persons[item].imageURL
-                    this.edit_data.u_imageURLresult=this.persons[item].imageURLresult
+                    // this.edit_data.u_imageURL = this.persons[item].imageURL
+                    // this.edit_data.u_imageURLresult=this.persons[item].imageURLresult
                     this.edit_data.u_prediction= this.persons[item].prediction
                     this.edit_data.u_fact=this.persons[item].fact
                     this.edit_data.u_stat=this.persons[item].stat
@@ -712,8 +689,8 @@
                             age : this.edit_data.u_age,
                             date : this.edit_data.u_date,
                             gender : this.edit_data.u_gender,
-                            imageURL : this.edit_data.u_imageURL, 
-                            imageURLresult:this.edit_data.u_imageURLresult,
+                            // imageURL : this.edit_data.u_imageURL, 
+                            // imageURLresult:this.edit_data.u_imageURLresult,
                             prediction: this.edit_data.u_prediction,
                             fact:this.edit_data.u_fact,
                             stat:this.edit_data.u_stat   
@@ -732,34 +709,39 @@
                     this.delete_data.d_name = this.persons[item].name
                     this.delete_data.d_date =this.persons[item].date
                     this.delete_data.d_key=this.persons[item].id_data
-
-                    this.delete_data.d_image=this.persons[item].imageURL
-                    this.delete_data.d_imageResult=this.persons[item].imageURLresult
+                    this.delete_data.d_imageName=this.persons[item].imageName
+                    // this.delete_data.d_image=this.persons[item].imageURL
+                    // this.delete_data.d_imageResult=this.persons[item].imageURLresult
                     this.delete_data.d_prediction=this.persons[item].prediction
                     console.log(this.delete_data)
                     $('#deleteConfirmModal').modal('show')                  
                 },
             DeleteDataTable(item){
+                    $('#deleteConfirmModal').modal('hide')  
                     firebase.database().ref('users/' + this.user_current.userId +'/table/'+item.d_key).remove().then(
                         this.fetchData()
                     );
-                    var desertRef = firebase.storage().refFromURL(item.d_image)
+                    // var desertRef = firebase.storage().refFromURL(item.d_image)
 
                     // Delete the file
-                    desertRef.delete().then(function() {
-                        console.log('success')
-                    }).catch(function(error) {
-                        console.log(error)
-                    });
-                    if(item.d_prediction!='Calculating'){ 
-                        var desertRef = firebase.storage().refFromURL(item.d_imageResult)                       
-                        desertRef.delete().then(function() {
-                            console.log('success')
-                        }).catch(function(error) {
-                             console.log(error)
-                        });
+                    // desertRef.delete().then(function() {
+                    //     console.log('success')
+                    // }).catch(function(error) {
+                    //     console.log(error)
+                    // });
+                    var storageRef = firebase.storage().ref();
+                    var starsRef = storageRef.child('images_Lung/'+item.d_imageName).delete();
+                    if(item.d_prediction=='Yes'||item.d_prediction=='No'){ 
+                        var storageRef = firebase.storage().ref();
+                        var starsRef = storageRef.child('Test/result_'+item.d_imageName).delete();
+                        // var desertRef = firebase.storage().refFromURL(item.d_imageResult)                       
+                        // desertRef.delete().then(function() {
+                        //     console.log('success')
+                        // }).catch(function(error) {
+                        //      console.log(error)
+                        // });
                     }
-                    $('#deleteConfirmModal').modal('hide')  
+                   
                 },
             previewFile(event){                    
                 var input = event.target;                    
@@ -788,7 +770,72 @@
             },
             re_process(item){
                 this.process_image(item,item.id_data)
-            }      
+            },
+            get_result_imageURL(person){
+                if(person.prediction=='Yes'||person.prediction=='No')
+                {
+                    console.log('get_result')
+                    var storageRef = firebase.storage().ref();
+                    var starsRef = storageRef.child('Test/result_'+person.imageName);
+                    return starsRef.getDownloadURL().then(result=>{
+                        console.log(result)
+                        this.modal_data.modal_imgPURL=result
+                        // return result
+                    })
+                    .catch(function(error) {
+                        switch (error.code) {
+                            case 'storage/object_not_found':
+                                console.log(" File doesn't exist")
+                                break;
+
+                            case 'storage/unauthorized':
+                                console.log("User doesn't have permission to access the object")
+                                break;
+
+                            case 'storage/canceled':
+                                console.log("User canceled the upload")
+                                break;
+
+                            case 'storage/unknown':
+                                console.log("Unknown error occurred, inspect the server response")
+                                break;
+                            }
+                        this.modal_data.modal_imgPURL= 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
+                });
+                }else this.modal_data.modal_imgPURL= 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
+            },
+            get_raw_imageURL(person){ 
+                console.log('get_raw')
+                var storageRef = firebase.storage().ref();
+                var starsRef = storageRef.child('images_Lung/'+person.imageName);
+           
+                starsRef.getDownloadURL().then(result=>{
+                    // console.log(result)
+                    this.modal_data.modal_imgURL=result
+                    // return result
+                })
+                .catch(function(error) {
+                    switch (error.code) {
+                        case 'storage/object_not_found':
+                            console.log(" File doesn't exist")
+                            break;
+
+                        case 'storage/unauthorized':
+                            console.log("User doesn't have permission to access the object")
+                            break;
+
+                        case 'storage/canceled':
+                            console.log("User canceled the upload")
+                            break;
+
+                        case 'storage/unknown':
+                            console.log("Unknown error occurred, inspect the server response")
+                            break;
+                        }
+                    
+                });
+                
+            }            
         },
         computed: {
             filteredItems() {
