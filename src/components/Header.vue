@@ -4,7 +4,7 @@
             <a  class="w3-bar-item w3-button w3-mobile">Lung cancer Detector</a>
             <a  class="w3-bar-item w3-button w3-mobile">Home</a>
             <!-- <a href="#" class="w3-bar-item w3-button w3-mobile">About us</a> -->
-            <div class="w3-dropdown-hover w3-blue w3-right w3-mobile">
+            <div class="w3-dropdown-hover w3-indigo w3-right w3-mobile">
                 <button class="w3-button"><span class="glyphicon glyphicon-user"></span> {{user_current.fname}}<span class="caret" style ="margin-left:10px"></span>  </button>
                 <div class="w3-dropdown-content w3-bar-block w3-card-4" style="right:0">
                     <!-- <a href="#" class="w3-bar-item w3-button">Edit Profile</a>

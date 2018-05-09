@@ -3,7 +3,7 @@
         <app-header></app-header>
         <div class="w3-row" style="padding-Top:30px;">
             <div class="w3-col m3 l3 w3-center">                 
-                   <button class="w3-btn w3-blue-gray w3-round-large w3-xlarge" style="font-size:18px!important; " data-toggle='modal' data-target='#uploadModal'><i class="w3-margin-right material-icons">file_upload</i>Upload</button>                
+                   <button class="w3-btn w3-indigo w3-round-large w3-xlarge" style="font-size:18px!important; " data-toggle='modal' data-target='#uploadModal'><i class="w3-margin-right material-icons">file_upload</i>Upload</button>                
                  
             </div>
             <div class="w3-col m8 l8" style="display: inline-block">
@@ -15,19 +15,19 @@
         <!-- End Menu  bar-->
 
         <!-- Table -->
-        <div class="container" style="margin-Top:10px;width:90%">
+        <div class="container w3-responsive" style="margin-Top:10px;width:90%;min-height:500px;max-height:800px">
             <h1 style="text-align:center;padding:10px">History</h1>
-            <table class="table table-bordered" id='data_table'>
+            <table class="table table-bordered w3-centered w3-striped " id='data_table'>
                 <thead>
-                    <tr>
+                    <tr class="w3-indigo">
                         <th class="col-sm-1">Image</th>
                         <th class="col-sm-4">Patient's name</th>
                         <th class="col-sm-1">Gender</th>
                         <th class="col-sm-1">Age</th>
-                        <th class="col-sm-1">Upload's Date</th>
+                        <th class="col-sm-1">Date</th>
                         <th class="col-sm-1">Prediction</th>
-                        <th class="col-sm-1">Medical diagnosis</th>
-                        <th class="col-sm-2">Edit</th>
+                        <th class="col-sm-2">Medical diagnosis</th>
+                        <th class="col-sm-1">Edit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -38,20 +38,22 @@
                     <tr v-for="(person,index)  in filteredItems" :key="index">
                         <td align="center">
                             <div class="w3-container">
-                                <button v-on:click="imageClicked(person,index)" class="w3-button w3-white"><span class="glyphicon glyphicon-search"></span></button>
+                                <button v-on:click="imageClicked(person,index)" class="w3-button w3-white"><span class="glyphicon glyphicon-picture"></span></button>
                             </div>
                         </td>                        
                         <!-- <td style="display:none">{{person.id}}</td> -->
-                        <td>{{person.name}}</td>
+                        <td style="text-align: left; padding:10px">{{person.name}}</td>
                         <td>{{person.gender}}</td>
                         <td>{{person.age}}</td>
                         <td>{{person.date}}</td>
-                        <td>{{person.prediction}}</td>
+                        <td>{{person.prediction}}
+                            <!-- <button class="w3-button w3-red w3-round tablebutton" v-show:="re_process_toggle(person)" v-on:click="re_process(person)">re-process</button> -->
+                        </td>
                         <td>
                             <center>
                                 <span v-if="person.stat">{{person.fact}}                                      
                                 </span>                                
-                                <span v-else> <button class="w3-button w3-red w3-round tablebutton" v-on:click="updateFact(index,1)" >Yes</button>
+                                <span v-else> <button class="w3-button w3-pink w3-round tablebutton" v-on:click="updateFact(index,1)" >Yes</button>
                                 <button class="w3-button w3-blue w3-round tablebutton" v-on:click="updateFact(index,0)"  >No</button></span>
 
                             </center>
@@ -60,8 +62,8 @@
                              <!-- <button class="w3-button w3-green w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Edit</button>
                              <button class="w3-button w3-red w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Delete</button> -->
                              <button class="w3-button w3-green w3-round tablebutton" v-on:click="edit_modal(index)"><i class="glyphicon glyphicon-pencil"></i></button>
-                             <button class="w3-button w3-red w3-round tablebutton" v-on:click="delete_modal(index)"><i class="glyphicon glyphicon-trash"></i></button>
-                             <button class="w3-button w3-red w3-round tablebutton" v-on:click="re_process(person)"> process</button>
+                             <button class="w3-button w3-pink w3-round tablebutton" v-on:click="delete_modal(index)"><i class="glyphicon glyphicon-trash"></i></button>
+                             
                             <!-- <button class="tablebutton w3-button w3-green w3-round" v-on:click="updateFact(index,0)"  style="height:20px;font-size:10;padding-Top:3">Edit</button> -->
                             </center>
                         </td>
@@ -657,12 +659,14 @@
                     this.edit_data.u_age = this.persons[item].age
                     this.edit_data.u_date =this.persons[item].date
                     this.edit_data.u_gender = this.persons[item].gender
-                    // this.edit_data.u_imageURL = this.persons[item].imageURL
-                    // this.edit_data.u_imageURLresult=this.persons[item].imageURLresult
+                    
                     this.edit_data.u_prediction= this.persons[item].prediction
                     this.edit_data.u_fact=this.persons[item].fact
                     this.edit_data.u_stat=this.persons[item].stat
                     this.edit_data.u_key=this.persons[item].id_data 
+                    
+                    this.get_result_imageURL(this.persons[item]);
+                    this.get_raw_imageURL(this.persons[item]);
                     // this.edit_data.u_key=this.persons[item].userId  
                     
                 },
@@ -779,7 +783,8 @@
                     var starsRef = storageRef.child('Test/result_'+person.imageName);
                     return starsRef.getDownloadURL().then(result=>{
                         console.log(result)
-                        this.modal_data.modal_imgPURL=result
+                        this.modal_data.modal_imgPURL=result  
+                        this.edit_data.u_imageURLresult=result
                         // return result
                     })
                     .catch(function(error) {
@@ -801,8 +806,10 @@
                                 break;
                             }
                         this.modal_data.modal_imgPURL= 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
+                        this.edit_data.u_imageURLresult== 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
                 });
                 }else this.modal_data.modal_imgPURL= 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
+                this.edit_data.u_imageURLresult== 'https://firebasestorage.googleapis.com/v0/b/lungnoduledetection.appspot.com/o/2018-08-05-14-26-51.jpeg?alt=media&token=7a55564c-3185-4060-a4e5-a9d182790d4d'
             },
             get_raw_imageURL(person){ 
                 console.log('get_raw')
@@ -811,7 +818,8 @@
            
                 starsRef.getDownloadURL().then(result=>{
                     // console.log(result)
-                    this.modal_data.modal_imgURL=result
+                    this.modal_data.modal_imgURL=result                                          
+                    this.edit_data.u_imageURL = result 
                     // return result
                 })
                 .catch(function(error) {
@@ -835,6 +843,11 @@
                     
                 });
                 
+            },
+            re_process_toggle(person){
+                if(person.prediction=='No'||person.prediction=='Yes')
+                    return true
+                else return false
             }            
         },
         computed: {
