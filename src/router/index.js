@@ -24,7 +24,10 @@ export default new Router({
         {
             path: '/home',
             name: 'Home',
-            component: home
+            component: home,
+            meta: {
+                requiresAuth: true
+            }
         }
     ],
     mode: 'history',

@@ -37,7 +37,7 @@
                 </p>
                 <p class="half last">
                     <label for="lname">Last Name</label>
-                    <input type="text"v-model="user.lname" name="lname" value="" placeholder="Last Name"
+                    <input type="text" v-model="user.lname" name="lname" value="" placeholder="Last Name"
                     v-validate="'required'" :class="{'input': true, 'is-danger': errors.has('user.lname') }">
                      <label v-show="errors.has('lname')" style="color: red;font-size:small;">Last name is required.</label>
                 </p>
@@ -46,9 +46,9 @@
                     <label for="gender">Gender</label>
                     <select v-model="user.gender"
                      v-validate="'required'" :class="{'input': true, 'is-danger': errors.has('user.lname') }">
-                    <option disabled="" selected="" value="0" name="gender">Gender</option>
-                    <option value="1">Male</option>
-                    <option value="2">Female</option>
+                    <option disabled="" selected="" value="none" name="gender">Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
                     </select>
                     <label v-show="errors.has('gender')" style="color: red;font-size:small;">Gender is required.</label>
                 </p>
@@ -60,7 +60,7 @@
                 </p>
                 <p>
                     <label for="department">Department</label>
-                    <input type="text"v-model="user.department"  name="department" value="" placeholder="department">
+                    <input type="text" v-model="user.department"  name="department" value="" placeholder="department">
                 </p>
 
                 <p>
@@ -85,18 +85,22 @@
                 
             </form>
         </div>
-    </div>
-    </div>
+    </div> 
 </template>
 
 <script>
-import Vue from 'vue';
-import VeeValidate from 'vee-validate';
-Vue.use(VeeValidate);
-VeeValidate.Validator.extend('passphrase', {
-        getMessage: field => 'Sorry dude, wrong pass phrase.',
-        validate: value => value.toUpperCase() == 'Demogorgon'.toUpperCase()
+
+    import firebase from 'firebase';
+    import {db} from '@/firebaseConfig'
+    import Vue from 'vue';
+    import VeeValidate from 'vee-validate';
+    Vue.use(VeeValidate);
+    VeeValidate.Validator.extend('passphrase', {
+            getMessage: field => 'Sorry dude, wrong pass phrase.',
+            validate: value => value.toUpperCase() == 'Demogorgon'.toUpperCase()
     });
+    
+    var md5 = require('md5');
     export default {
         name: 'Register',
         data(){
@@ -111,7 +115,8 @@ VeeValidate.Validator.extend('passphrase', {
                     gender:'',
                     department:'',
                     pid:'',
-                    hospital:''                    
+                    hospital:'',    
+                    table:''                
                 }
             }
         },
@@ -123,27 +128,26 @@ VeeValidate.Validator.extend('passphrase', {
                     }
                 });
             },
-            signup() {
-            //   console.log(this.addUserInfo());
-               this.$http.post('https://lndapi.herokuapp.com/signup', this.addUserInfo())
-                    .then(response => { 
-                        alert(response.body.message)
-                        if ('token' in response.body) {
-                            this.$session.start()
-                            this.$session.set('jwt', response.body.token);
-                            this.$session.set('user',response.body.name);
-                            // Vue.http.headers.common['x-access-token'] = response.body.token;
-                            this.go_Home();
-                        }
-                    }, error => { 
-                        var errorCode = error.code;
-                        var errorMsg = error.message;
+            signup() {                 
+                firebase.auth().createUserWithEmailAndPassword(this.user.email, this.user.password).then( 
+                user => {
+                    var newUser = this.addUserInfo()
+                    var user = firebase.auth().currentUser; 
+                    var uid = user.uid;
+                    db.ref('users/'+ uid).set(newUser)
+                    alert('Your accound has been created!')               
+                    this.$router.push('/home')
+                }, 
+                error => {
+                        var errorCode = error.code
+                        var errorMsg = error.message
                         if (errorCode == 'auth/weak-password') {
-                            alert('The password is too week');
+                                alert('The password is too week');
                         } else {
-                            alert('Oops.' + errorMsg);
+                                alert('Oops.' + errorMsg);
                         }
-                    });
+                    }
+                );         
             },
             addUserInfo() {
                 var newUser = {
@@ -155,20 +159,15 @@ VeeValidate.Validator.extend('passphrase', {
                     gender:this.user.gender,
                     department:this.user.department,
                     pid:this.user.pid,
-                    hospital:this.user.hospital 
+                    hospital:this.user.hospital, 
+                    table:this.user.table
                 }
-                return newUser;
-            },
-            go_Home() {
-                this.$router.push({
-                    name: 'Home'
-                });
-            }
-        },
-        beforeCreate: function () {
-            if (this.$session.exists()) {
-                this.$router.push('/home')
-            }
+                return newUser
+                // var uid = md5(this.user.email);
+                // console.log(uid);
+                // var Ref = firebase.database().ref("users/");
+                // db.ref('users/' + uid).set(newUser);
+            }            
         }
     }
 </script>

@@ -42,14 +42,15 @@
 </template>
 
 <script>
-import Vue from 'vue';
-import VeeValidate from 'vee-validate';
-Vue.use(VeeValidate);
-VeeValidate.Validator.extend('passphrase', {
-        getMessage: field => 'Sorry dude, wrong pass phrase.',
-        validate: value => value.toUpperCase() == 'Demogorgon'.toUpperCase()
-    });
-export default {    
+    import firebase from 'firebase';
+    import Vue from 'vue';
+    import VeeValidate from 'vee-validate';
+    Vue.use(VeeValidate);
+    VeeValidate.Validator.extend('passphrase', {
+            getMessage: field => 'Sorry dude, wrong pass phrase.',
+            validate: value => value.toUpperCase() == 'Demogorgon'.toUpperCase()
+        });
+    export default {    
     name: 'Index',
     data(){
         return{
@@ -68,26 +69,52 @@ export default {
                 });
             },
             signin() {
+                firebase.auth().signInWithEmailAndPassword(this.user.email, this.user.password).then(
+                    user => {
+                        alert('User authentication successful');
+                        this.$router.push({
+                            name: 'Home'
+                        });
+                    },
+                    err => {
+                        if (err.code === 'auth/wrong-password') {
+                            alert('Wrong password.');
+                        } else if (err.code === 'auth/user-not-found') {
+                            alert('User not found!');
+                        } else if (err.code === 'auth/invalid-email') {
+                            alert('Invalid email');
+                        } else {
+                            alert('Oops. ' + err.message);
+                        }
+                    }
+                ).catch(error => {
+                    if (error.code === 'auth/wrong-password') {
+                        alert('Wrong password')
+                    } else {
+                        alert(error.message);
+                    }
+                }) 
             //    this.addUserInfo();
-               this.$http.post('https://lndapi.herokuapp.com/signin', this.addUserInfo())
-                    .then(response => { 
-                        if(response.body.success)
-                        {
-                            // alert('yeah.' + response.body.message);
-                            if ('token' in response.body) {
-                            this.$session.start()
-                            this.$session.set('jwt', response.body.token)
-                            this.$session.set('user',response.body.name);
-                            Vue.http.headers.common['x-access-token'] = response.body.token;
-                            this.go_Home();
-                            }                               
-                        }else {
-                           alert('Oops.' + response.body.message);     
-                        }
-                    }, error => { 
-                            console.log(error.message);
-                        }
-                    );
+
+            //    this.$http.post('https://lndapi.herokuapp.com/signin', this.addUserInfo())
+            //         .then(response => { 
+            //             if(response.body.success)
+            //             {
+            //                 // alert('yeah.' + response.body.message);
+            //                 if ('token' in response.body) {
+            //                 this.$session.start()
+            //                 this.$session.set('jwt', response.body.token)
+            //                 this.$session.set('user',response.body.name);
+            //                 Vue.http.headers.common['x-access-token'] = response.body.token;
+            //                 this.go_Home();
+            //                 }                               
+            //             }else {
+            //                alert('Oops.' + response.body.message);     
+            //             }
+            //         }, error => { 
+            //                 console.log(error.message);
+            //             }
+            //         );
             },
             addUserInfo() {
                 var newUser = {
@@ -102,11 +129,11 @@ export default {
                 });
             }
     },
-    beforeCreate: function () {
-        if (this.$session.exists()) {
-            this.go_Home();
-        }
-    }
+    // beforeCreate: function () {
+    //     if (this.$session.exists()) {
+    //         this.go_Home();
+    //     }
+    // }
 }
 </script>
 
