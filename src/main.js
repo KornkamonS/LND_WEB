@@ -6,6 +6,9 @@ import router from './router'
 import firebase from 'firebase'
 import { firebaseApp, db } from '@/firebaseConfig'
 import VueResource from 'vue-resource'
+// import moment from 'moment'
+
+// Vue.use(moment)
 // import VueSession from 'vue-session'
  
 // Vue.use(VueSession);

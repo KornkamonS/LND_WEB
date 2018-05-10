@@ -21,13 +21,13 @@
                 <thead>
                     <tr class="w3-indigo">
                         <th class="col-sm-1">Image</th>
-                        <th class="col-sm-4">Patient's name</th>
+                        <th class="col-sm-3">Patient's name</th>
                         <th class="col-sm-1">Gender</th>
                         <th class="col-sm-1">Age</th>
-                        <th class="col-sm-2">Upload's Date</th>
+                        <th class="col-sm-1">Upload's Date</th>
                         <th class="col-sm-1">Prediction</th>
-                        <th class="col-sm-1">Medical diagnosis</th>
-                        <th class="col-sm-1">Edit</th>
+                        <th class="col-sm-2">Medical diagnosis</th>
+                        <th class="col-sm-2">Edit</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -37,8 +37,8 @@
                     </tr>
                     <tr v-for="(person,index)  in filteredItems" :key="index">
                         <td align="center">
-                            <div class="w3-container">
-                                <button v-on:click="imageClicked(person,index)" class="w3-button w3-white"><span class="glyphicon glyphicon-picture"></span></button>
+                            <div class="w3-container ">
+                                <a class="w3-center" v-on:click="imageClicked(person,index)" style="background-color:transparent;"><span class="glyphicon glyphicon-picture" ></span></a>
                             </div>
                         </td>                        
                         <!-- <td style="display:none">{{person.id}}</td> -->
@@ -46,8 +46,7 @@
                         <td>{{person.gender}}</td>
                         <td>{{person.age}}</td>
                         <td>{{person.date}}</td>
-                        <td>
-                            <!-- {{person.prediction}} -->
+                        <td> 
                              <span v-if="person.prediction=='Yes'">
                                          <p data-toggle="tooltip-Yes-pre" title="Has nodule">{{person.prediction}}</p>
                                      </span>                                     
@@ -65,18 +64,18 @@
                                     <span v-else> 
                                         <p data-toggle="tooltip-No-med" title="Don't Has Nodule" >{{person.fact}}</p></span>                                     
                                     </span>                                
-                                <span v-else> <button class="w3-button w3-pink w3-round tablebutton" v-on:click="updateFact(index,1)" data-toggle="tooltip-Yes" title="Has nodule"><i class="glyphicon glyphicon-ok"></i></button>
-                                <button class="w3-button w3-blue w3-round tablebutton" v-on:click="updateFact(index,0)" data-toggle="tooltip-No" title="Don't Has Nodule" ><i class="glyphicon glyphicon-remove"></i></button></span>
+                                <span v-else> <button class="w3-btn w3-pink w3-round tablebutton" v-on:click="updateFact(index,1)" data-toggle="tooltip-Yes" title="Has nodule"><i class="glyphicon glyphicon-ok"></i></button>
+                                <button class="w3-btn w3-blue w3-round tablebutton" v-on:click="updateFact(index,0)" data-toggle="tooltip-No" title="Don't Has Nodule" ><i class="glyphicon glyphicon-remove"></i></button></span>
 
                             </center>
                         </td>
                         <td> <center>
-                             <!-- <button class="w3-button w3-green w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Edit</button>
-                             <button class="w3-button w3-red w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Delete</button> -->
-                             <button class="w3-button w3-green w3-round tablebutton" v-on:click="edit_modal(index)" data-toggle="tooltip-Edit" title="Edit"><i class="glyphicon glyphicon-pencil"></i></button>
-                             <button class="w3-button w3-pink w3-round tablebutton" v-on:click="delete_modal(index)" data-toggle="tooltip-Delete" title="Delete" ><i class="glyphicon glyphicon-trash"></i></button>
+                             <!-- <button class="w3-btn w3-green w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Edit</button>
+                             <button class="w3-btn w3-red w3-round tablebutton" data-toggle='modal' data-target='#editModal'>Delete</button> -->
+                             <button class="w3-btn w3-green w3-round tablebutton" v-on:click="edit_modal(index)" data-toggle="tooltip-Edit" title="Edit"><i class="glyphicon glyphicon-pencil"></i></button>
+                             <button class="w3-btn w3-pink w3-round tablebutton" v-on:click="delete_modal(index)" data-toggle="tooltip-Delete" title="Delete" ><i class="glyphicon glyphicon-trash"></i></button>
                              
-                            <!-- <button class="tablebutton w3-button w3-green w3-round" v-on:click="updateFact(index,0)"  style="height:20px;font-size:10;padding-Top:3">Edit</button> -->
+                            <!-- <button class="tablebutton w3-btn w3-green w3-round" v-on:click="updateFact(index,0)"  style="height:20px;font-size:10;padding-Top:3">Edit</button> -->
                             </center>
                         </td>
                     </tr>
@@ -99,13 +98,13 @@
                             <span v-show="modal_data.modal_stat"  v-if="modal_data.modal_result=='Yes'" class="tag w3-pink w3-padding" style="font-size:medium;font-weight: 700;">Have a nodule in lung</span>                                     
                         </span>                                
                         <span v-else> 
-                            <button class="w3-button w3-pink w3-round tablebutton" v-on:click="updateFact(modal_data.modal_index,1)" >Yes</button>
-                            <button class="w3-button w3-blue w3-round tablebutton" v-on:click="updateFact(modal_data.modal_index,0)"  >No</button>
+                            <button class="w3-btn w3-pink w3-round tablebutton" v-on:click="updateFact(modal_data.modal_index,1)" >Yes</button>
+                            <button class="w3-btn w3-blue w3-round tablebutton" v-on:click="updateFact(modal_data.modal_index,0)"  >No</button>
                         </span>
                                 
                      
-                        <button class="w3-button w3-left w3-round-large w3-blue-gray w3-large" style="margin-left:20px" @click="toggle_show_image(0)" v-show="modal_data.modal_show_stat" ><i class="glyphicon glyphicon-eye-close" style="font-size:24px"></i></button>
-                        <button class="w3-button w3-left w3-round-large w3-blue-gray w3-large" style="margin-left:20px" @click="toggle_show_image(1)" v-show="!modal_data.modal_show_stat" ><i class="glyphicon glyphicon-eye-open" style="font-size:24px"></i></button>
+                        <button class="w3-btn w3-left w3-round-large w3-blue-gray w3-large" style="margin-left:20px" @click="toggle_show_image(0)" v-show="modal_data.modal_show_stat" ><i class="glyphicon glyphicon-eye-close" style="font-size:24px"></i></button>
+                        <button class="w3-btn w3-left w3-round-large w3-blue-gray w3-large" style="margin-left:20px" @click="toggle_show_image(1)" v-show="!modal_data.modal_show_stat" ><i class="glyphicon glyphicon-eye-open" style="font-size:24px"></i></button>
                     </h2>
                    
                 </div>
@@ -123,7 +122,7 @@
         <!--END imageModal-->
 
         <!-- uploadModal-->
-        <div id="uploadModal" class="modal fade" style="width:800px !important;margin:40px auto;">
+        <div id="uploadModal" class="modal fade" style="width:800px !important;margin:3% auto;">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -165,11 +164,12 @@
                                 <p v-show="!errors.has('upload.u_age')" style="color: white;font-size:small;">.</p>                          
                                 <p v-show="errors.has('upload.u_age')" style="color: red;font-size:small;">Patient's age is required and valid</p>
                                 
+                                <a class="w3-btn w3-blue-gray w3-round w3-small  w3-padding w3-section" @click="onPickFile">Select image</a>
                                 <label for="uploadimg">Image: {{file_image.name}}</label>
                                 <!-- <p></p> -->
                                     <!-- <p v-show="!errors.has('imageUpload')" style="color: red;font-size:small;"></p>
                                     <p v-show="errors.has('imageUpload')" style="color: red;font-size:small;">Patient's age is required and valid</p> -->
-                                    <a class="w3-btn w3-blue-gray w3-padding w3-margin w3-section" @click="onPickFile">Select image</a>
+                                    
 
                                 <input @change="previewFile" type="file" id="files" name="files[]" value="Upload image" ref="fileInput" accept="image/*" style="padding:20px; display:none"
                                 v-validate="'required'"
@@ -177,8 +177,8 @@
                                 <p v-show="!errors.has('imageUpload')" style="color: white;font-size:small;">.</p>
                                 <p v-show="errors.has('imageUpload')" style="color: red;font-size:small;">Please select image.</p>
                                 
-                                <button class="w3-button w3-blue w3-right" v-show="!upload_data.u_subbimtBut" style="width:100%">Submit</button>
-                                <a class="w3-button w3-red w3-right" @click="cancelUpload" v-show="upload_data.u_subbimtBut" style="width:100%">Cancel</a>
+                                <button class="w3-btn w3-blue w3-right w3-round" v-show="!upload_data.u_subbimtBut" style="width:100%">Submit</button>
+                                <a class="w3-btn w3-red w3-right w3-round" @click="cancelUpload" v-show="upload_data.u_subbimtBut" style="width:100%">Cancel</a>
                                 
                             </div>
                             <div class="col-sm-6" v-show="modal_data.modal_stat">                
@@ -269,7 +269,7 @@
         </div>
         <!--END uploadModal-->
         <!-- deleteConfirmModal-->
-        <div id="deleteConfirmModal" class="modal fade" style="width:400px !important;margin:40px auto;">
+        <div id="deleteConfirmModal" class="modal fade" style="width:400px !important;margin:2% auto;">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -304,10 +304,13 @@
                         <div class="row">
                             <div class="col-sm-6 w3-center">
                                 
+                                
                             </div>
-                            <div class="col-sm-6 w3-center"> 
-                                <button class="w3-button w3-blue-gray w3-section" data-dismiss="modal">Cancel</button>  
-                                <button class="w3-button w3-red w3-section" @click="DeleteDataTable(delete_data)">Delete</button>
+                            <div class="col-sm-3 w3-center"> 
+                                 <button class="w3-btn w3-blue-gray w3-right" data-dismiss="modal">Cancel</button> 
+                            </div>
+                            <div class="col-sm-3 w3-center"> 
+                                <button class="w3-btn w3-red w3-right " @click="DeleteDataTable(delete_data)">Delete</button>
                                       
                             </div>
                         </div>                
@@ -328,14 +331,18 @@
     import VeeValidate from 'vee-validate'; 
     import {
         db
-    } from '@/firebaseConfig' 
+    } from '@/firebaseConfig'
+   
     Vue.use(VeeValidate);
     VeeValidate.Validator.extend('passphrase', {
             getMessage: field => 'Sorry dude, wrong pass phrase.',
             validate: value => value.toUpperCase() == 'Demogorgon'.toUpperCase()
         });
-    let datenow = new Date(); 
+    // let datenow = new Date();
+  
     var md5 =require('md5');
+    var moment = require('moment');
+    
     export default {
         name: 'Home',
         components: {
@@ -387,7 +394,7 @@
                     u_age: '',
                     u_date: '',
                     u_gender: '',
-                    u_image: '',
+                    u_imageName: '',
                     u_fact:'',
                     u_stat:'',
                     u_key:''  },
@@ -495,7 +502,8 @@
                 return person; 
             },
             imageClicked(item,index) {
-                
+                this.modal_data.u_imageURLresult='';
+                this.modal_data.u_imageURL='';
                 this.modal_data.modal_name = item.name;
                 this.modal_data.modal_result = item.fact;
                 this.modal_data.modal_stat = item.stat;                
@@ -514,8 +522,8 @@
                 var image_name=file.name    
                 
                 var storageRef = firebase.storage().ref();
-                
-                var temp=md5(datenow.getTime())                
+                var datenow = moment(); 
+                var temp=md5(datenow.format('DD-MM-YYYY HH:mm:ss')+image_name)                
                 var ext= image_name.slice(image_name.lastIndexOf('.'))
                 image_name=temp+ext
                 this.upload_data.u_imageName=image_name
@@ -602,8 +610,11 @@
                     return firebase.database().ref('users/' + this.user_current.userId +'/table/').push(person)
                 },
             newData(){ 
+                    var datenow = moment(); 
                     // this.upload_data.u_image=this.imageUpload;                                       
-                    this.upload_data.u_date=datenow.getDate()+'/'+datenow.getMonth()+'/'+datenow.getFullYear()+' '+datenow.getHours()+':'+datenow.getMinutes()+':'+datenow.getSeconds();
+                    // this.upload_data.u_date=datenow.getDate()+'/'+datenow.getMonth()+'/'+datenow.getFullYear()+' '+datenow.getHours()+':'+datenow.getMinutes()+':'+datenow.getSeconds();
+                    this.upload_data.u_date=datenow.format('DD/MM/YYYY')
+                    console.log(datenow.format('DD-MM-YYYY HH:mm:ss'))
                     var data = {
                         // data_id:md5(this.upload_data.u_name+this.upload_data.u_date) ,       
                         id : this.upload_data.u_id,
@@ -671,7 +682,7 @@
                     this.edit_data.u_age = this.persons[item].age
                     this.edit_data.u_date =this.persons[item].date
                     this.edit_data.u_gender = this.persons[item].gender
-                    
+                    this.edit_modal.u_imageName=this.persons[item].imageName
                     this.edit_data.u_prediction= this.persons[item].prediction
                     this.edit_data.u_fact=this.persons[item].fact
                     this.edit_data.u_stat=this.persons[item].stat
@@ -705,6 +716,7 @@
                             age : this.edit_data.u_age,
                             date : this.edit_data.u_date,
                             gender : this.edit_data.u_gender,
+                            imageName:this.edit_data.u_imageName,
                             // imageURL : this.edit_data.u_imageURL, 
                             // imageURLresult:this.edit_data.u_imageURLresult,
                             prediction: this.edit_data.u_prediction,
