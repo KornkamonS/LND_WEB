@@ -3,7 +3,7 @@
         <app-header></app-header>
         <div class="w3-row" style="padding-Top:30px;">
             <div class="w3-col m3 l3 w3-center">                 
-                   <button class="w3-btn w3-indigo w3-round-large w3-xlarge" style="font-size:18px!important; " data-toggle='modal' data-target='#uploadModal'><i class="w3-margin-right material-icons">file_upload</i>Upload</button>                
+                   <button @click="open_uploadModal" class="w3-btn w3-indigo w3-round-large w3-xlarge" style="font-size:18px!important; " ><i class="w3-margin-right material-icons">file_upload</i>Upload</button>                
                  
             </div>
             <div class="w3-col m8 l8" style="display: inline-block">
@@ -38,7 +38,7 @@
                     <tr v-for="(person,index)  in filteredItems" :key="index">
                         <td align="center">
                             <div class="w3-container ">
-                                <a class="w3-center" v-on:click="imageClicked(person,index)" style="background-color:transparent;"><span class="glyphicon glyphicon-picture" ></span></a>
+                                <a class="w3-center" @click="imageClicked(person,index)" style="background-color:transparent;"><span class="glyphicon glyphicon-picture" ></span></a>
                             </div>
                         </td>                        
                         <!-- <td style="display:none">{{person.id}}</td> -->
@@ -126,7 +126,7 @@
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
-                    <span class="close" data-dismiss="modal"  @click="resetUploadData()">&times;</span>
+                    <span class="close" @click="close_uploadModal">&times;</span>
                     <h2>Edit Chest X-Ray image</h2>
                 </div>
                 <div class="modal-body">
@@ -205,7 +205,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <span class="close" data-dismiss="modal">&times;</span>
-                    <h2>Upload Chest X-Ray image</h2>
+                    <h2>Edit Patient's data</h2>
                 </div>
                 <div class="modal-body">
                     <form @submit.prevent="validateBeforeSubmit('edit')" data-vv-scope="edit">
@@ -267,7 +267,7 @@
                 </div>
             </div>
         </div>
-        <!--END uploadModal-->
+        <!--END editModal-->
         <!-- deleteConfirmModal-->
         <div id="deleteConfirmModal" class="modal fade" style="width:400px !important;margin:2% auto;">
             <!-- Modal content-->
@@ -320,7 +320,7 @@
                 </div>
         </div>
         
-        <!--END uploadModal-->
+        <!--END deleteConfirmModal-->
     </div>
 </template>
 
@@ -562,7 +562,7 @@
                     // person.imageURL=downloadURL;
                     vm.upload_data.u_subbimtBut=false;  
                     vm.addData2Table(person).then(result=>{
-                        $('#uploadModal').modal('hide');
+                        vm.close_uploadModal();
                         vm.resetUploadData();
                         vm.fetchData(); 
                         vm.process_image(person,result.key);   
@@ -655,6 +655,7 @@
                         gender : this.persons[item].gender,
                         // imageURL : this.persons[item].imageURL, 
                         // imageURLresult:this.persons[item].imageURLresult,
+                        imageName:this.persons[item].imageName,
                         prediction: this.persons[item].prediction,
                         fact:this.persons[item].fact,
                         stat:this.persons[item].stat   
@@ -771,7 +772,7 @@
                     }
                    
                 },
-            previewFile(event){                    
+            previewFile: function(event){                    
                 var input = event.target;                    
                 if (input.files && input.files[0]) {
                     this.file_image=input.files[0];
@@ -809,7 +810,7 @@
                     return starsRef.getDownloadURL().then(result=>{
                         console.log(result)
                         vm.modal_data.modal_imgPURL=result  
-                        vm.edit_data.u_imageURLresult=result
+                        // vm.edit_data.u_imageURLresult=result
                         // return result
                     })
                     .catch(function(error) {
@@ -874,7 +875,15 @@
                 if(person.prediction=='No'||person.prediction=='Yes')
                     return true
                 else return false
-            }            
+            },
+            open_uploadModal(){
+                $('#uploadModal').modal('show');
+            },
+            close_uploadModal(){
+                
+                $('#uploadModal').modal('hide');
+                this.resetUploadData()
+            }          
         },
         computed: {
             filteredItems() {

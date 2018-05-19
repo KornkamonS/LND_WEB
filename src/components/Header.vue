@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="w3-bar navbar-color w3-large w3-card">
-            <a  class="w3-bar-item w3-button w3-mobile">Lung cancer Detector</a>
+            <a  class="w3-bar-item w3-button w3-mobile">Lung Nodule Detector</a>
             <a  class="w3-bar-item w3-button w3-mobile">Home</a>
             <!-- <a href="#" class="w3-bar-item w3-button w3-mobile">About us</a> -->
             <div class="w3-dropdown-hover w3-indigo w3-right w3-mobile">

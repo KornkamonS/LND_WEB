@@ -1,11 +1,11 @@
 <template>  
     <div>
-       <!-- <div class="w3-bar w3-large navbar-color ">
+       <div class="w3-bar w3-large navbar-color ">
             <a href="#" class="w3-bar-item w3-button w3-mobile">Lung cancer Detector</a>
-            <a href="#" class="w3-bar-item w3-button w3-mobile"><span class="glyphicon glyphicon-home"></span> Home</a>
-            <a href="home.html" class="w3-bar-item w3-button w3-mobile"> About us</a>
-            <a href="#" class="w3-bar-item w3-button w3-blue w3-right w3-mobile"><span class="glyphicon glyphicon-log-in"></span> Log in</a>
-        </div> -->
+            <!-- <a href="#" class="w3-bar-item w3-button w3-mobile"><span class="glyphicon glyphicon-home"></span> Home</a> -->
+            <!-- <a href="home.html" class="w3-bar-item w3-button w3-mobile"> About us</a> -->
+            <!-- <a href="#" class="w3-bar-item w3-button w3-blue w3-right w3-mobile"><span class="glyphicon glyphicon-log-in"></span> Log in</a> -->
+        </div>
        <div class="w3-row " style="background-color:#36486b;min-height:900px" >
             <!-- <div class="w3-col l1">.</div> -->
             <div class="w3-col l7 w3-padding-xlarge" style="padding=20px">
